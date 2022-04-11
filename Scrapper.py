@@ -7,8 +7,6 @@ import csv
 from src.JobDetails import JobDetails
 
 jobsList = []
-
-
 def processHomePage(job_page_links):
     with open('pageLinks.csv', 'a', newline='', encoding='utf-8') as csvF:
         csv_writer = csv.writer(csvF)
