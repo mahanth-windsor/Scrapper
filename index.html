@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Job list</title>
+    <link href="/static/style.css" rel="stylesheet" />
+    <script>
+function redirectToJob(linkN) {
+console.log("test", linkN)
+  window.open(linkN, '_blank');
+}
+</script>
+  </head>
+  <body>
+    <h1>Job List</h1>
+    <p>Welcome to my website!</p>
+  <div>
+    % for item in jobs:
+    <article class="job-card">
+  <div class="job-title">{{item.jobTitle}}</div>
+  <div class="company-name">{{item.company}}</div>
+
+
+  <button  class="apply" onclick="redirectToJob('{{item.link}}')">Visit Job</button>
+
+<!--  <button class="save">Save Job</button>-->
+  <a href="#"></a>
+</article>
+  % end
+  </div>
+  </body>
+</html>
