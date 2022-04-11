@@ -87,11 +87,6 @@ def processSoup(source):
     # with open('test.csv', 'r') as readCsv:
     #     csvReader = csv.reader(readCsv)
 
-    #     for row in csvReader:
-    #         if not row:
-    #             continue
-    #         print(row)
-
 
 def startCrawling():
     pagenationsLinks = ['https://ca.indeed.com/jobs?q=&l=Ontario',
