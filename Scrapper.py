@@ -19,16 +19,17 @@ def processHomePage(job_page_links):
             jobTitle = soup.find('div', class_='jobsearch-JobInfoHeader-title-container').h1.text
 
             company = ''
-            if (soup.find('div', class_='jobsearch-CompanyInfoContainer').a is not None and 
-                   soup.find('div', class_='jobsearch-CompanyInfoContainer').a.text is not None ):    
-                company = soup.find('div', class_='jobsearch-CompanyInfoContainer').a.text
+            if (soup.find('div', class_='jobsearch-CompanyInfoContainer') is not None and
+                    soup.find('div', class_='jobsearch-CompanyInfoContainer').a is not None and 
+                      soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string is not None ):    
+                company = soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string
             else:
                 company = 'null'
 
 
-            print(link + '------>')
-            print(mainDivJobPageDescription)
-            print('\n')
+            # print(link + '------>')
+            # print(mainDivJobPageDescription)
+            # print('\n')
 
             
             # csv_writer.writerow(['links'])
