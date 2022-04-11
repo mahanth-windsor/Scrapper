@@ -10,7 +10,7 @@ jobsList = []
 
 
 def processHomePage(job_page_links):
-    with open('pageLinks.csv', 'a', newline='', encoding='utf-8') as csvF:
+    with open('../pageLinks.csv', 'a', newline='', encoding='utf-8') as csvF:
         csv_writer = csv.writer(csvF)
         # csv_writer.writerow(['Job Title', 'Company', 'Job Page link', 'Job Description' ])
         for link in job_page_links:
@@ -69,7 +69,7 @@ def processSoup(source):
             job_page_links.append(link)
 
     # this opens the out put file
-    with open('outputs1.txt', 'a') as f:
+    with open('../outputs1.txt', 'a') as f:
 
         # this get the all  the anchors in the main div that have the class tapItem. 
         # others anchors link to company pages, reviews etc. 
@@ -103,7 +103,7 @@ def startCrawling():
                         'https://ca.indeed.com/jobs?l=Ontario&start=50'
 
                         ]
-    with open('pageLinks.csv', 'w', newline='', encoding='utf-8') as csvF:
+    with open('../pageLinks.csv', 'w', newline='', encoding='utf-8') as csvF:
         csv_writer = csv.writer(csvF)
         csv_writer.writerow(['Job Title', 'Company', 'Job Page link', 'Job Description'])
         # with open('outputs1.txt', 'w') as csvF:

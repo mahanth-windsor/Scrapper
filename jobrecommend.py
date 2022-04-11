@@ -1,6 +1,6 @@
 from bottle import run, route, view, static_file
 
-from Scrapper import startCrawling
+from src.Scrapper import startCrawling
 
 
 @route('/')
