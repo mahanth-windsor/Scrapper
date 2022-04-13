@@ -1,5 +1,7 @@
 # from asyncio.windows_events import NULL
 from concurrent.futures import process
+from typing import Union, Any
+
 from bs4 import BeautifulSoup
 import requests
 import csv
@@ -7,6 +9,7 @@ import csv
 from src.JobDetails import JobDetails
 
 jobsList = []
+ids = 0
 def processHomePage(job_page_links):
     with open('pageLinks.csv', 'a', newline='', encoding='utf-8') as csvF:
         csv_writer = csv.writer(csvF)
@@ -24,20 +27,12 @@ def processHomePage(job_page_links):
             company = ''
 
             if (soup.find('div', class_='jobsearch-CompanyInfoContainer') is not None and
-                    soup.find('div', class_='jobsearch-CompanyInfoContainer').a is not None and 
-                      soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string is not None ):    
+                    soup.find('div', class_='jobsearch-CompanyInfoContainer').a is not None and
+                      soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string is not None ):
                 company = soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string
-            else:
-                company = None
-
-            # print(link + '------>')
-            # print(mainDivJobPageDescription)
-            # print('\n')
-
-
 
             if link:
-                csv_writer.writerow([jobTitle, company, link, mainDivJobPageDescription])
+                csv_writer.writerow([len(jobsList)+1, jobTitle, company, link, mainDivJobPageDescription])
 
             job = JobDetails(jobTitle, company, link, mainDivJobPageDescription)
             jobsList.append(job)
@@ -98,7 +93,7 @@ def startCrawling():
                         ]
     with open('pageLinks.csv', 'w', newline='', encoding='utf-8') as csvF:
         csv_writer = csv.writer(csvF)
-        csv_writer.writerow(['Job Title', 'Company', 'Job Page link', 'Job Description'])
+        csv_writer.writerow(['ID', 'Job Title', 'Company', 'Job Page link', 'Job Description'])
         # with open('outputs1.txt', 'w') as csvF:
         #     csv_writer = csv.writer(csvF)
         #     csv_writer.writerow(['links'])
