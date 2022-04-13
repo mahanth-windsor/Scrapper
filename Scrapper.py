@@ -27,21 +27,12 @@ def processHomePage(job_page_links):
             company = ''
 
             if (soup.find('div', class_='jobsearch-CompanyInfoContainer') is not None and
-                    soup.find('div', class_='jobsearch-CompanyInfoContainer').a is not None and 
-                      soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string is not None ):    
+                    soup.find('div', class_='jobsearch-CompanyInfoContainer').a is not None and
+                      soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string is not None ):
                 company = soup.find('div', class_='jobsearch-CompanyInfoContainer').a.string
-            else:
-                company = None
-
-            # print(link + '------>')
-            # print(mainDivJobPageDescription)
-            # print('\n')
-
-
 
             if link:
-                ids = ids+1
-                csv_writer.writerow([ids, jobTitle, company, link, mainDivJobPageDescription])
+                csv_writer.writerow([len(jobsList)+1, jobTitle, company, link, mainDivJobPageDescription])
 
             job = JobDetails(jobTitle, company, link, mainDivJobPageDescription)
             jobsList.append(job)
