@@ -34,7 +34,7 @@ class Indeed:
                     break
 
             jobsList.append(JobDetails(jobTitle, company,
-                            link, mainDivJobPageDescription))
+                            link, mainDivJobPageDescription, 'Indeed'))
 
         return jobsList
 
@@ -98,7 +98,8 @@ class Indeed:
 
         jobDetailsList = self.processHomePage(allLinks)
 
-        CSVWriter.writeToCsv(jobDetailsList, 'Indeed_Jobs.csv')
+        # CSVWriter.writeToCsv(jobDetailsList, 'Indeed_Jobs.csv')
+        CSVWriter.writeToCsv(jobDetailsList, 'All_Jobs.csv')
 
 
 

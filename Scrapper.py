@@ -4,8 +4,12 @@ from typing import Union, Any
 
 from ProcessIndeed import Indeed
 from ProcessLinkedIn import LinkedIn
+from writeCSV import CSVWriter
 
 def main(): 
+
+    CSVWriter.initializeRowHeader('All_Jobs.csv')
+
     indeed = Indeed()
     indeed.startCrawling()
 
