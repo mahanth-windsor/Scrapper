@@ -32,7 +32,7 @@ class LinkedIn:
 
             company = soup.find('a', class_='topcard__org-name-link').string
 
-            jobs.append(JobDetails(jobTitle, company, link, description))
+            jobs.append(JobDetails(jobTitle, company, link, description, 'LinkedIn'))
 
         return jobs
 
@@ -62,7 +62,8 @@ class LinkedIn:
 
         jobs = self.processLinkedInLinks(allLinks)
 
-        CSVWriter.writeToCsv(jobs, 'LinkedIn_Jobs.csv')
+        # CSVWriter.writeToCsv(jobs, 'LinkedIn_Jobs.csv')
+        CSVWriter.writeToCsv(jobs, 'All_Jobs.csv')
 
 
 
