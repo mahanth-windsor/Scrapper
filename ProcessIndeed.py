@@ -65,8 +65,8 @@ class Indeed:
 
     def processHomePage2(self, link):
 
-        print(link)
-        print('\n')
+        # print(link)
+        # print('\n')
 
         jobPageSource = requests.get(link).text
 
@@ -119,18 +119,18 @@ class Indeed:
         allLinks = []
 
         for sourceUrl in pagenationsLinks:
-            print(sourceUrl)
+            # print(sourceUrl)
             source = requests.get(sourceUrl).text
             allLinks.extend(self.processSoup(source))
 
         jobResults = []
         
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            jobResults = executor.map(self.processHomePage2, allLinks)
+        # with concurrent.futures.ThreadPoolExecutor() as executor:
+        #     jobResults = executor.map(self.processHomePage2, allLinks)
 
-        return jobResults
+        # return jobResults
 
-        # return self.processHomePage(allLinks)
+        return self.processHomePage(allLinks)
 
     
         # return jobDetailsList

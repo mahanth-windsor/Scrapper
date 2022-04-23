@@ -99,12 +99,15 @@ class LinkedIn:
         for anchor in allAnchors:
             allLinks.append(anchor['href'])
 
-        # return self.processLinkedInLinks(allLinks)
-        jobs = []
-        with concurrent.futures.ThreadPoolExecutor() as exec:
-            jobs = exec.map(self.processLinkedInLinks2, allLinks)
+        return self.processLinkedInLinks(allLinks)
+        
+        # jobs = []
+        # with concurrent.futures.ThreadPoolExecutor() as exec:
+        #     jobs = exec.map(self.processLinkedInLinks2, allLinks)
 
-        return jobs
+        # return jobs
+
+
 
         # CSVWriter.writeToCsv(jobs, 'LinkedIn_Jobs.csv')
         # CSVWriter.writeToCsv(jobs, self.csvName)
