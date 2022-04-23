@@ -8,13 +8,22 @@ from writeCSV import CSVWriter
 
 def main(): 
 
-    CSVWriter.initializeRowHeader('All_Jobs.csv')
+    position = input("What position are you looking for ? ")
+    location = input("what is your preferred location ? ")
+    csvName = 'allJobs.csv'
 
-    indeed = Indeed()
-    indeed.startCrawling()
+    CSVWriter.initializeRowHeader(csvName)
 
-    linkedIn = LinkedIn()
-    linkedIn.process()
+    allJobs = []
+
+    # indeed = Indeed(position, location, csvName)
+    # allJobs.extend(indeed.process())
+
+    linkedIn = LinkedIn(position, location, csvName)
+    allJobs.extend(linkedIn.process())
+
+    CSVWriter.writeToCsv(allJobs, csvName)
+
 
 if __name__ == "__main__":
     main()

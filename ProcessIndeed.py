@@ -1,13 +1,15 @@
 from bs4 import BeautifulSoup
 import requests
+import concurrent.futures
 
 from src.JobDetails import JobDetails
-from writeCSV import CSVWriter
 
 class Indeed:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, position, location, csvName):
+        self.postion = position
+        self.location = location
+        self.csvName = csvName
 
     def processHomePage(self, job_page_links):
 
@@ -61,23 +63,47 @@ class Indeed:
 
         return links
 
-    def startCrawling(self):
+    def processHomePage2(self, link):
 
-        position = input("What position are you looking for ? ")
-        location = input("what is your preferred location ? ")
-        numberOfJobs = 10
+        print(link)
+        print('\n')
+
+        jobPageSource = requests.get(link).text
+
+        soup = BeautifulSoup(jobPageSource, 'lxml')
+
+        mainDivJobPageDescription = soup.find(
+            'div', class_='jobsearch-JobComponent-description').text
+
+        jobTitle = soup.find(
+            'div', class_='jobsearch-JobInfoHeader-title-container').h1.text
+
+        company = ''
+
+        for child in soup.find('div', class_='jobsearch-CompanyInfoContainer').descendants:
+
+            if child.string is not None:
+                company = child.string
+                break
+
+        return JobDetails(jobTitle, company,
+                        link, mainDivJobPageDescription, 'Indeed')
+
+    def process(self):
+        
+        numberOfJobs = 100
 
         indeedBaseURLjobs = "https://ca.indeed.com/jobs"
 
         # https://ca.indeed.com/jobs?q&l=Windsor%2C%20ON&start=20
         pagenationsLinks = []
 
-        jobPosition = '?q=' + position.strip().replace(' ', '%20')
+        jobPosition = '?q=' + self.postion.strip().replace(' ', '%20')
 
-        if location == '':
-            location = 'Windsor'
+        if self.location == '':
+            self.location = 'Windsor'
 
-        jobLocation = '&l=' + location.strip()
+        jobLocation = '&l=' + self.location.strip()
 
         searchUrl = indeedBaseURLjobs + jobPosition + jobLocation
 
@@ -93,13 +119,24 @@ class Indeed:
         allLinks = []
 
         for sourceUrl in pagenationsLinks:
+            print(sourceUrl)
             source = requests.get(sourceUrl).text
             allLinks.extend(self.processSoup(source))
 
-        jobDetailsList = self.processHomePage(allLinks)
+        jobResults = []
+        
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            jobResults = executor.map(self.processHomePage2, allLinks)
+
+        return jobResults
+
+        # return self.processHomePage(allLinks)
+
+    
+        # return jobDetailsList
 
         # CSVWriter.writeToCsv(jobDetailsList, 'Indeed_Jobs.csv')
-        CSVWriter.writeToCsv(jobDetailsList, 'All_Jobs.csv')
+        # CSVWriter.writeToCsv(jobDetailsList, self.csvName)
 
 
 
