@@ -10,10 +10,9 @@ from src.JobDetails import JobDetails
 
 class LinkedIn:
 
-    def __init__(self, position, location, csvName):
+    def __init__(self, position, location):
         self.postion = position
         self.location = location
-        self.csvName = csvName
 
     def processLinkedInLinks(self, allLinks):
 

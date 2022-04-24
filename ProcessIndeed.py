@@ -6,10 +6,9 @@ from src.JobDetails import JobDetails
 
 class Indeed:
 
-    def __init__(self, position, location, csvName):
+    def __init__(self, position, location):
         self.postion = position
         self.location = location
-        self.csvName = csvName
 
     def processHomePage(self, job_page_links):
 
@@ -125,18 +124,20 @@ class Indeed:
 
         jobResults = []
         
+        # this the threadding part 
+        # a thread will be created for each link 
         # with concurrent.futures.ThreadPoolExecutor() as executor:
         #     jobResults = executor.map(self.processHomePage2, allLinks)
-
         # return jobResults
 
+        # limiting the number of threads
+        # numberOfLinks = len(allLinks)
+        # for 
+
+
+        # this is the sequentian part 
         return self.processHomePage(allLinks)
 
-    
-        # return jobDetailsList
-
-        # CSVWriter.writeToCsv(jobDetailsList, 'Indeed_Jobs.csv')
-        # CSVWriter.writeToCsv(jobDetailsList, self.csvName)
 
 
 
