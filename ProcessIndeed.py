@@ -1,20 +1,25 @@
 from bs4 import BeautifulSoup
 import requests
-import concurrent.futures
 
 from src.JobDetails import JobDetails
 
 class Indeed:
 
-    def __init__(self, position, location):
+    def __init__(self, position, location, numberOfJobs):
         self.postion = position
         self.location = location
+        self.numberOfJobs = numberOfJobs
 
     def processHomePage(self, job_page_links):
 
         jobsList = []
 
+        jobCount = 0
+
         for link in job_page_links:
+
+            if jobCount > self.numberOfJobs:
+                break
 
             jobPageSource = requests.get(link).text
 
@@ -36,6 +41,8 @@ class Indeed:
 
             jobsList.append(JobDetails(jobTitle, company,
                             link, mainDivJobPageDescription, 'Indeed'))
+
+            jobCount += 1
 
         return jobsList
 
@@ -89,8 +96,6 @@ class Indeed:
                         link, mainDivJobPageDescription, 'Indeed')
 
     def process(self):
-        
-        numberOfJobs = 100
 
         indeedBaseURLjobs = "https://ca.indeed.com/jobs"
 
@@ -108,12 +113,13 @@ class Indeed:
 
         pagenationsLinks.append(searchUrl)
 
-        numberOfPages = 10
-        while numberOfPages <= numberOfJobs:
+        numberOfPages = 0
+
+        while numberOfPages <= self.numberOfJobs:
 
             nextPageUrl = searchUrl + '&start=' + str(numberOfPages)
             pagenationsLinks.append(nextPageUrl)
-            numberOfPages += 10
+            numberOfPages += 7
 
         allLinks = []
 
@@ -122,7 +128,7 @@ class Indeed:
             source = requests.get(sourceUrl).text
             allLinks.extend(self.processSoup(source))
 
-        jobResults = []
+        # jobResults = []
         
         # this the threadding part 
         # a thread will be created for each link 

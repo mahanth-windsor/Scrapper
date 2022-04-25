@@ -1,3 +1,4 @@
+from turtle import position
 from unittest import result
 from bs4 import BeautifulSoup
 from requests import request
@@ -11,39 +12,55 @@ from src.JobDetails import JobDetails
 
 class Monster:
 
-    def __init__(self, position, location):
+    def __init__(self, position, location, numberOfJobs):
         self.postion = position
         self.location = location
+        self.numberOfJobs = numberOfJobs
 
-    def processMonsterLinks(self, allLinks):
+    # def processClassElements(self, elem, className, soup):
+
+    #     text = ''
+    #     for t in soup.find_all(elem, className):
+    #         text += t.string
+
+    #     return text
+
+    def processMonsterLinks(self, jobCards):
 
         jobs = []
 
-        for link in allLinks:
+        jobCount = 0
 
-            print(link)
+        for card in jobCards:
 
-            response = requests.get(link)
+            if jobCount > self.numberOfJobs:
+                break
             
-            if response.status_code != 200:
-                continue
+            link = 'https:' + card.a['href']
+            jobTitle = card.a.text
+            company = card.h3.text
 
-            monsterJobPage = response.text
+            jobPage = requests.get(link).text
+            jobPageSource = BeautifulSoup(jobPage, 'lxml')
+            description = jobPageSource.find('main').text
 
-            print(monsterJobPage)
+            # with open('jobcards.txt', 'a') as f:
+            #     f.write('card -------------------------------------------------')
+            #     f.write('\n link ----> ' + link)
+            #     f.write('\n position ----> ' + jobTitle)
+            #     f.write('\n company ---> ' + company)
+            #     f.write('\n description ---> ' + description)
+            #     f.write('\ncard -------------------------------------------------')
+            #     f.write('\n')
 
-            soup = BeautifulSoup(monsterJobPage, 'lxml')
-
-            # description = soup.find('div', {'class': 'descriptionstyles__DescriptionContainer-'}, partial = True).text
-            description = ''
-            jobTitle = soup.find('h1', class_='JobViewTitle').string
-
-            company = soup.find('h2', class_='headerstyle__JobViewHeaderCompany-sc-1ijq9nh-6').string
 
             jobs.append(JobDetails(jobTitle, company, link, description, 'Monster'))
 
+            jobCount += 1
+
         return jobs
 
+    
     # def processLinkedInLinks2(self, link):
 
     #     # print(link)
@@ -84,13 +101,13 @@ class Monster:
         browser.get(searchUrl)
         target = browser.find_element_by_class_name('job-search-resultsstyle__LoadMoreContainer-sc-1wpt60k-1')
         i = 0
-        while i < 3:
+        while i < self.numberOfJobs:
 
             actions = ActionChains(browser)
             actions.move_to_element(target)
             actions.perform()
-            time.sleep(2)
-            i += 1
+            time.sleep(3)
+            i += 10
 
         pageSource = browser.page_source
 
@@ -98,15 +115,32 @@ class Monster:
 
         soup = BeautifulSoup(pageSource, 'lxml')
 
-        allAnchors = soup.find_all('a', class_='job-cardstyle__JobCardTitle-sc-1mbmxes-2')
+        jobCards = soup.find_all('article', 'job-cardstyle__JobCardComponent-sc-1mbmxes-0')
 
-        allLinks = []
+        # allAnchors = soup.find_all('a', class_='job-cardstyle__JobCardTitle-sc-1mbmxes-2')
 
-        for anchor in allAnchors:
-            # print(anchor['href'])
-            allLinks.append('https:' + anchor['href'])
+        if jobCards is None or len(jobCards) == 0:
+            return
 
-        return self.processMonsterLinks(allLinks)
+        # jobs = []
+
+        # for card in jobCards:
+
+        #     with open('jobcards.txt', 'a') as f:
+        #         f.write('card -------------------------------------------------')
+        #         f.write('\n link ----> ' + 'https://' + card.a['href'])
+        #         f.write('\n position ----> ' + card.a.text)
+        #         f.write('\n company ---> ' + card.h3.text)
+        #         f.write('\ncard -------------------------------------------------')
+        #         f.write('\n')
+
+        #     link = 'https://' + card.a['href']
+        #     jobTitle = card.a.text
+        #     company = card.h3.text
+
+        #     jobs.append(JobDetails(jobTitle, company, link, '', 'Monster'))
+
+        return self.processMonsterLinks(jobCards)
         
         # jobs = []
         # with concurrent.futures.ThreadPoolExecutor() as exec:

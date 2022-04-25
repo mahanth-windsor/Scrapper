@@ -10,16 +10,21 @@ from src.JobDetails import JobDetails
 
 class LinkedIn:
 
-    def __init__(self, position, location):
+    def __init__(self, position, location, numberOfJobs):
         self.postion = position
         self.location = location
+        self.numberOfJobs = numberOfJobs
 
     def processLinkedInLinks(self, allLinks):
 
         jobs = []
 
+        jobCount = 0
+
         for link in allLinks:
 
+            if jobCount > self.numberOfJobs:
+                break
             # print(link)
 
             response = requests.get(link)
@@ -38,6 +43,8 @@ class LinkedIn:
             company = soup.find('a', class_='topcard__org-name-link').string
 
             jobs.append(JobDetails(jobTitle, company, link, description, 'LinkedIn'))
+
+            jobCount += 1
 
         return jobs
 
@@ -79,11 +86,11 @@ class LinkedIn:
         browser.get(searchUrl)
 
         i = 0
-        while i < 2:
+        while i < self.numberOfJobs:
 
             browser.execute_script("window.scrollTo(0,document.body.scrollHeight)")
             time.sleep(3)
-            i += 1
+            i += 10
 
         pageSource = browser.page_source
 
@@ -92,6 +99,9 @@ class LinkedIn:
         soup = BeautifulSoup(pageSource, 'lxml')
 
         allAnchors = soup.find_all('a', class_='base-card__full-link')
+
+        if allAnchors is None or len(allAnchors) == 0:
+            return
 
         allLinks = []
 
