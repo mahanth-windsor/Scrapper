@@ -23,16 +23,18 @@ def main():
     allJobsLinkedIn = []
     allJobsMonster = []
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        allJobsIndeed = executor.submit(indeed_thread, position, location, numberOfJobs )
-        allJobsLinkedIn = executor.submit(linkedin_thread, position, location, numberOfJobs)
-        allJobsMonster = executor.submit(monster_thread, position, location, numberOfJobs)
+    try:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            allJobsIndeed = executor.submit(indeed_thread, position, location, numberOfJobs )
+            allJobsLinkedIn = executor.submit(linkedin_thread, position, location, numberOfJobs)
+            allJobsMonster = executor.submit(monster_thread, position, location, numberOfJobs)
 
-    # print(allJobsIndeed.result())
-    allJobs.extend(allJobsIndeed.result())
-    allJobs.extend(allJobsLinkedIn.result())
-    allJobs.extend(allJobsMonster.result())
-    CSVWriter.writeToCsv(allJobs, csvName)
+        allJobs.extend(allJobsIndeed.result())
+        allJobs.extend(allJobsLinkedIn.result())
+        allJobs.extend(allJobsMonster.result())
+        CSVWriter.writeToCsv(allJobs, csvName)
+    except:
+        print('scraper error')
 
 def monster_thread(position, location, numberOfJobs):
     monster = Monster(position, location, numberOfJobs)

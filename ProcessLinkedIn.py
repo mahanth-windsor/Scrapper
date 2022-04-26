@@ -1,9 +1,7 @@
-from unittest import result
 from bs4 import BeautifulSoup
 from requests import request
 import requests
 from selenium import webdriver
-import concurrent.futures
 import time
 
 from src.JobDetails import JobDetails
@@ -25,22 +23,26 @@ class LinkedIn:
 
             if jobCount > self.numberOfJobs:
                 break
-            # print(link)
+            try:
+                # server query
+                response = requests.get(link)
+                
+                if response.status_code != 200:
+                    continue
 
-            response = requests.get(link)
-            
-            if response.status_code != 200:
-                continue
+                linkedInJobPage = response.text
 
-            linkedInJobPage = response.text
+                soup = BeautifulSoup(linkedInJobPage, 'lxml')
+                # extracting the job description using the name show-more-less-html__markup 
+                description = soup.find('div', class_='show-more-less-html__markup').text
 
-            soup = BeautifulSoup(linkedInJobPage, 'lxml')
-
-            description = soup.find('div', class_='show-more-less-html__markup').text
-
-            jobTitle = soup.find('h1', class_='top-card-layout__title').string
-
-            company = soup.find('a', class_='topcard__org-name-link').string
+                # extracting the job description using the name top-card-layout__title 
+                jobTitle = soup.find('h1', class_='top-card-layout__title').string
+                    
+                # extracting the job description using the name topcard__org-name-link 
+                company = soup.find('a', class_='topcard__org-name-link').string
+            except:
+                print('LinkedIn details page, data extraction error')
 
             jobs.append(JobDetails(jobTitle, company, link, description, 'LinkedIn'))
 
@@ -82,32 +84,40 @@ class LinkedIn:
 
         searchUrl = urlBase + jobPosition + jobLocation
 
-        browser=webdriver.Chrome()
-        browser.get(searchUrl)
+        try:
+            browser=webdriver.Chrome()
+            browser.get(searchUrl)
+        except:
+            print('LinkedIn SearchPage URL error')
 
         i = 0
+        # we assume that there will 10 jobs loaded each time
         while i < self.numberOfJobs:
-
-            browser.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-            time.sleep(3)
-            i += 10
+            try:
+                #  to scroll to the bottom of the page. 
+                browser.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+                time.sleep(3)
+                i += 10
+            except:
+                print('Linked in Scrolling error')
 
         pageSource = browser.page_source
 
         browser.close()
 
         soup = BeautifulSoup(pageSource, 'lxml')
+        try:
+            allAnchors = soup.find_all('a', class_='base-card__full-link')
 
-        allAnchors = soup.find_all('a', class_='base-card__full-link')
+            if allAnchors is None or len(allAnchors) == 0:
+                return
 
-        if allAnchors is None or len(allAnchors) == 0:
-            return
+            allLinks = []
 
-        allLinks = []
-
-        for anchor in allAnchors:
-            allLinks.append(anchor['href'])
-
+            for anchor in allAnchors:
+                allLinks.append(anchor['href'])
+        except:
+            print('LinkedIn Search page link extraction error')
         return self.processLinkedInLinks(allLinks)
         
         # jobs = []

@@ -20,25 +20,28 @@ class Indeed:
 
             if jobCount > self.numberOfJobs:
                 break
+            
+            try:
+                jobPageSource = requests.get(link).text
 
-            jobPageSource = requests.get(link).text
+                soup = BeautifulSoup(jobPageSource, 'lxml')
 
-            soup = BeautifulSoup(jobPageSource, 'lxml')
+                mainDivJobPageDescription = soup.find(
+                    'div', class_='jobsearch-JobComponent-description').text
 
-            mainDivJobPageDescription = soup.find(
-                'div', class_='jobsearch-JobComponent-description').text
+                jobTitle = soup.find(
+                    'div', class_='jobsearch-JobInfoHeader-title-container').h1.text
 
-            jobTitle = soup.find(
-                'div', class_='jobsearch-JobInfoHeader-title-container').h1.text
+                company = ''
 
-            company = ''
+                for child in soup.find('div', class_='jobsearch-CompanyInfoContainer').descendants:
 
-            for child in soup.find('div', class_='jobsearch-CompanyInfoContainer').descendants:
-
-                if child.string is not None:
-                    company = child.string
-                    break
-
+                    if child.string is not None:
+                        company = child.string
+                        break
+            except:
+                print('Indeed job detail page scrappin error')
+                
             jobsList.append(JobDetails(jobTitle, company,
                             link, mainDivJobPageDescription, 'Indeed'))
 
@@ -52,48 +55,50 @@ class Indeed:
 
         # a list to store the job links
         links = []
+        try:
+            # this gets the main div that lists all the jobs
+            div_list = soup.find('div', id='mosaic-provider-jobcards')
 
-        # this gets the main div that lists all the jobs
-        div_list = soup.find('div', id='mosaic-provider-jobcards')
+            contents = div_list.find_all('a', class_='tapItem')
 
-        contents = div_list.find_all('a', class_='tapItem')
+            links = []
+            for content in contents:
 
-        links = []
-        for content in contents:
+                base_link = "https://ca.indeed.com"
+                link = base_link + content['href']
 
-            base_link = "https://ca.indeed.com"
-            link = base_link + content['href']
-
-            if link:
-                links.append(link)
+                if link:
+                    links.append(link)
+        except:
+            print('Indeed error in job search link scraping')
 
         return links
 
-    def processHomePage2(self, link):
+    # def processHomePage2(self, link):
 
-        # print(link)
-        # print('\n')
+    #     # print(link)
+    #     # print('\n')
 
-        jobPageSource = requests.get(link).text
+    #     jobPageSource = requests.get(link).text
 
-        soup = BeautifulSoup(jobPageSource, 'lxml')
+    #     soup = BeautifulSoup(jobPageSource, 'lxml')
 
-        mainDivJobPageDescription = soup.find(
-            'div', class_='jobsearch-JobComponent-description').text
+    #     mainDivJobPageDescription = soup.find(
+    #         'div', class_='jobsearch-JobComponent-description').text
 
-        jobTitle = soup.find(
-            'div', class_='jobsearch-JobInfoHeader-title-container').h1.text
+    #     jobTitle = soup.find(
+    #         'div', class_='jobsearch-JobInfoHeader-title-container').h1.text
 
-        company = ''
+    #     company = ''
 
-        for child in soup.find('div', class_='jobsearch-CompanyInfoContainer').descendants:
+    #     for child in soup.find('div', class_='jobsearch-CompanyInfoContainer').descendants:
 
-            if child.string is not None:
-                company = child.string
-                break
+    #         if child.string is not None:
+    #             company = child.string
+    #             break
 
-        return JobDetails(jobTitle, company,
-                        link, mainDivJobPageDescription, 'Indeed')
+    #     return JobDetails(jobTitle, company,
+    #                     link, mainDivJobPageDescription, 'Indeed')
 
     def process(self):
 
@@ -142,7 +147,10 @@ class Indeed:
 
 
         # this is the sequentian part 
-        return self.processHomePage(allLinks)
+        if len(allLinks) > 0:
+            return self.processHomePage(allLinks)
+        
+        return 
 
 
 
