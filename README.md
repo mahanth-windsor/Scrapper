@@ -1,6 +1,7 @@
 # Scrapper-WDET
  PythonJobRecommender 
 
+https://docs.google.com/document/d/1W9jJToDuHpyT4_hqVWEw92C-5eYGojLxO1A_28dDWSE/edit?usp=sharing
  
 
 Scraping 
